@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEKNOKENT PROJEC ATÖLYE | Yönetim</title>
+    <title>PANEL | Yönetim</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -272,36 +272,83 @@
         document.getElementById('createUserBtn').addEventListener('click', createUser);
 
         async function createUser() {
-            const email = document.getElementById('newUserEmail').value;
-            const username = document.getElementById('newUserName').value;
-            const password = document.getElementById('newUserPassword').value;
-            const rank = document.getElementById('newUserRank').value;
+    const email = document.getElementById('newUserEmail').value.trim();
+    const username = document.getElementById('newUserName').value.trim();
+    const password = document.getElementById('newUserPassword').value;
+    const rank = document.getElementById('newUserRank').value;
 
-            if (email && username && password) {
-                try {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-                    
-                    // Kullanıcı verilerini kaydet
-                    await set(ref(database, 'users/' + user.uid), {
-                        username: username,
-                        email: email,
-                        rank: rank,
-                        status: 'offline',
-                        created: Date.now()
-                    });
-                    
-                    alert('Kullanıcı başarıyla oluşturuldu!');
-                    clearUserForm();
-                    loadUsers();
-                    
-                } catch (error) {
-                    alert('Kullanıcı oluşturulurken hata: ' + error.message);
-                }
-            } else {
-                alert('Lütfen tüm alanları doldurun!');
-            }
+    // Validasyon
+    if (!email || !username || !password) {
+        showAlert('Lütfen tüm alanları doldurun!', 'error');
+        return;
+    }
+
+    // Email format kontrolü - DAHA BASİT
+    if (!email.includes('@') || !email.includes('.')) {
+        showAlert('Geçerli bir e-posta adresi giriniz!', 'error');
+        document.getElementById('newUserEmail').classList.add('error');
+        return;
+    }
+
+    if (password.length < 6) {
+        showAlert('Şifre en az 6 karakter olmalıdır!', 'error');
+        return;
+    }
+
+    // Butonu devre dışı bırak
+    const createBtn = document.getElementById('createUserBtn');
+    createBtn.disabled = true;
+    createBtn.textContent = 'Oluşturuluyor...';
+
+    try {
+        // Firebase Authentication'da kullanıcı oluştur
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        // Realtime Database'de kullanıcı verilerini kaydet
+        await set(ref(database, 'users/' + user.uid), {
+            username: username,
+            email: email,
+            rank: rank,
+            status: 'offline',
+            created: Date.now(),
+            last_login: null
+        });
+
+        showAlert(`Kullanıcı başarıyla oluşturuldu: ${username}`, 'success');
+        clearUserForm();
+        loadUsers();
+        
+    } catch (error) {
+        console.error('Kullanıcı oluşturma hatası:', error);
+        
+        // Firebase hata mesajlarını Türkçe'ye çevir
+        let errorMessage = 'Kullanıcı oluşturulurken bir hata oluştu!';
+        
+        switch (error.code) {
+            case 'auth/email-already-in-use':
+                errorMessage = 'Bu e-posta adresi zaten kullanılıyor!';
+                break;
+            case 'auth/invalid-email':
+                errorMessage = 'Geçersiz e-posta formatı! Örnek: kullanici@mail.com';
+                break;
+            case 'auth/operation-not-allowed':
+                errorMessage = 'E-posta/şifre ile giriş etkin değil!';
+                break;
+            case 'auth/weak-password':
+                errorMessage = 'Şifre çok zayıf, daha güçlü bir şifre deneyin!';
+                break;
+            default:
+                errorMessage = `Hata: ${error.message}`;
         }
+        
+        showAlert(errorMessage, 'error');
+    } finally {
+        // Butonu tekrar aktif et
+        createBtn.disabled = false;
+        createBtn.textContent = 'Kullanıcı Oluştur';
+    }
+}
 
         function clearUserForm() {
             document.getElementById('newUserEmail').value = '';
@@ -342,7 +389,18 @@
                 }
             });
         }
+function isValidEmail(email) {
+    return email.includes('@') && email.includes('.');
+}
 
+document.getElementById('newUserEmail').addEventListener('blur', function() {
+    if (this.value && !isValidEmail(this.value)) {
+        this.classList.add('error');
+        showAlert('Geçerli bir e-posta adresi giriniz! Örnek: kullanici@mail.com', 'error');
+    } else {
+        this.classList.remove('error');
+    }
+});
         // Kullanıcı rütbesini güncelle
         window.updateUserRank = function(userId, newRank) {
             set(ref(database, 'users/' + userId + '/rank'), newRank);
