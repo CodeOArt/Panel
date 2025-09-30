@@ -106,6 +106,7 @@
             box-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
         }
         
+        /* .form-select class'ını kaldırdık ama mevcutsa kalsın */
         .form-select {
             width: 100%;
             background: rgba(5, 10, 20, 0.7);
@@ -225,7 +226,6 @@
     </div>
 
     <div class="admin-container">
-        <!-- Kullanıcı Yönetimi -->
         <div class="admin-panel">
             <div class="panel-title">👥 Kullanıcı Yönetimi</div>
             
@@ -234,24 +234,27 @@
                 <input type="text" class="form-input" id="newUserName" placeholder="Kullanıcı Adı" required>
                 <input type="password" class="form-input" id="newUserPassword" placeholder="Parola (min. 6 karakter)" required>
                 <div class="password-strength" id="passwordStrength"></div>
-                <select class="form-select" id="newUserRank">
-                     <option value="Misafir">Misafir</option>
-                    <option value="Operatör">Operatör</option>
-                    <option value="Uzman Operatör">Uzman Operatör</option>
-                    <option value="Kıdemli Operatör">Kıdemli Operatör</option>
-                     <option value="Tim Lideri">Tim Lideri</option>
-                     <option value="Kıdemli Tim Lideri">Kıdemli Tim Lideri</option>
-                      <option value="Tabur Komutanı">Tabur Komutanı</option>
-                </select>
+                
+                <input type="text" class="form-input" id="newUserRank" placeholder="Rütbe (örnek: Uzman Operatör)" list="rankSuggestions" required>
+                <datalist id="rankSuggestions">
+                    <option value="Misafir">
+                    <option value="Operatör">
+                    <option value="Uzman Operatör">
+                    <option value="Kıdemli Operatör">
+                    <option value="Tim Lideri">
+                    <option value="Kıdemli Tim Lideri">
+                    <option value="Tabur Komutanı">
+                    <option value="Amir">
+                    <option value="Müdür">
+                </datalist>
+                
                 <button class="btn" id="createUserBtn">Kullanıcı Oluştur</button>
             </div>
             
             <div class="users-list" id="usersList">
-                <!-- Kullanıcılar buraya eklenecek -->
-            </div>
+                </div>
         </div>
 
-        <!-- Duyuru Yönetimi -->
         <div class="admin-panel">
             <div class="panel-title">📢 Duyuru Yönetimi</div>
             
@@ -263,8 +266,7 @@
             
             <div class="panel-title" style="margin-top: 30px;">📋 Son Duyurular</div>
             <div id="announcementsList">
-                <!-- Duyurular buraya eklenecek -->
-            </div>
+                </div>
         </div>
     </div>
 
@@ -273,6 +275,7 @@
         import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-database.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-auth.js";
 
+        // Lütfen bu yapılandırma nesnesini kendi Firebase projenizle güncelleyin.
         const firebaseConfig = {
             apiKey: "AIzaSyBAoHT3BDfKcimv-43vkyYXoSVpOJ5vIsM",
             authDomain: "projecweb-e3382.firebaseapp.com",
@@ -367,7 +370,7 @@
                     document.getElementById('userInfo').textContent = 
                         `${userData.username} - ${userData.rank}`;
                     
-                    // Yetki kontrolü
+                    // Yetki kontrolü (Müdür veya Amir değilse erişimi engelle)
                     if (!['Müdür', 'Amir'].includes(userData.rank)) {
                         showAlert('Yönetim paneline erişim izniniz yok!', 'error');
                         setTimeout(() => {
@@ -398,6 +401,16 @@
                 this.classList.remove('error');
             }
         });
+        
+        // Rütbe validasyonu
+        document.getElementById('newUserRank').addEventListener('blur', function() {
+            if (this.value.trim().length < 2) {
+                 this.classList.add('error');
+                showAlert('Rütbe en az 2 karakter olmalıdır!', 'error');
+            } else {
+                this.classList.remove('error');
+            }
+        });
 
         // Kullanıcı oluşturma
         document.getElementById('createUserBtn').addEventListener('click', createUser);
@@ -406,10 +419,10 @@
             const email = document.getElementById('newUserEmail').value.trim();
             const username = document.getElementById('newUserName').value.trim();
             const password = document.getElementById('newUserPassword').value;
-            const rank = document.getElementById('newUserRank').value;
+            const rank = document.getElementById('newUserRank').value.trim(); // Trim eklendi
 
             // Validasyon
-            if (!email || !username || !password) {
+            if (!email || !username || !password || !rank) { // !rank kontrolü eklendi
                 showAlert('Lütfen tüm alanları doldurun!', 'error');
                 return;
             }
@@ -424,9 +437,14 @@
                 showAlert('Şifre en az 6 karakter olmalıdır!', 'error');
                 return;
             }
-
+            
             if (username.length < 2) {
                 showAlert('Kullanıcı adı en az 2 karakter olmalıdır!', 'error');
+                return;
+            }
+            
+            if (rank.length < 2) { // Rütbe karakter kontrolü eklendi
+                showAlert('Rütbe en az 2 karakter olmalıdır!', 'error');
                 return;
             }
 
@@ -492,10 +510,13 @@
             document.getElementById('newUserEmail').value = '';
             document.getElementById('newUserName').value = '';
             document.getElementById('newUserPassword').value = '';
+            document.getElementById('newUserRank').value = ''; // Rütbe alanı temizlendi
             document.getElementById('passwordStrength').textContent = '';
             document.getElementById('newUserEmail').classList.remove('error');
+            document.getElementById('newUserRank').classList.remove('error');
         }
 
+        // loadUsers fonksiyonu rütbe güncelleme input/butonu ile güncellendi
         function loadUsers() {
             const usersRef = ref(database, 'users');
             onValue(usersRef, (snapshot) => {
@@ -517,17 +538,14 @@
                             <div class="user-name">${user.username}</div>
                             <div class="user-email">${user.email}</div>
                         </div>
-                        <div>
-                             <select class="form-select" onchange="updateUserRank('${userId}', this.value)" 
-                                    style="width: 120px; font-size: 12px;">
-                                <option value="Misafir" ${user.rank === 'Misafir' ? 'selected' : ''}>Misafir</option>
-                                <option value="Operatör" ${user.rank === 'Operatör' ? 'selected' : ''}>Üye</option>
-                                <option value="Uzman Operatör" ${user.rank === 'Uzman Operatör' ? 'selected' : ''}>Uzman Operatör</option>
-                                <option value="Kıdemli Operatör" ${user.rank === 'Kıdemli Operatör' ? 'selected' : ''}>Kıdemli Operatör</option>
-                                <option value="Tim Lideri" ${user.rank === 'Tim Lideri' ? 'selected' : ''}>Tim Lideri</option>
-                                <option value="Kıdemli Tim Lideri" ${user.rank === 'Kıdemli Tim Lideri' ? 'selected' : ''}>Kıdemli Tim Lideri</option>
-                                <option value="Tabur Komutanı" ${user.rank === 'Tabur Komutanı' ? 'selected' : ''}>Tabur Komutanı</option>
-                            </select>
+                        <div style="display: flex; gap: 5px;">
+                             <input type="text" class="form-input" id="rankInput_${userId}" 
+                                    value="${user.rank}" placeholder="Rütbe" 
+                                    style="width: 140px; font-size: 12px; margin-bottom: 0;">
+                             <button class="btn" onclick="updateUserRank('${userId}', document.getElementById('rankInput_${userId}').value)" 
+                                     style="width: 80px; font-size: 12px; padding: 5px 10px; margin-top: 0;">
+                                Güncelle
+                             </button>
                         </div>
                     `;
                     container.appendChild(userDiv);
@@ -535,14 +553,40 @@
             });
         }
 
-        // Kullanıcı rütbesini güncelle
+        // Kullanıcı rütbesini güncelle (window'a taşındı)
         window.updateUserRank = function(userId, newRank) {
+            newRank = newRank.trim();
+            
+            if (!newRank || newRank === '') {
+                showAlert('Rütbe alanı boş bırakılamaz!', 'error');
+                return;
+            }
+            
+            if (newRank.length < 2) {
+                 showAlert('Rütbe en az 2 karakter olmalıdır!', 'error');
+                return;
+            }
+            
+            // Buton ve input referanslarını al
+            const updateBtn = document.querySelector(`[onclick*="${userId}"]`);
+            const rankInput = document.getElementById(`rankInput_${userId}`);
+            
+            const originalText = updateBtn.textContent;
+            updateBtn.disabled = true;
+            updateBtn.textContent = '...';
+            rankInput.disabled = true;
+
             set(ref(database, 'users/' + userId + '/rank'), newRank)
                 .then(() => {
-                    showAlert('Kullanıcı rütbesi güncellendi!', 'success');
+                    showAlert('Kullanıcı rütbesi başarıyla güncellendi!', 'success');
                 })
                 .catch((error) => {
                     showAlert('Rütbe güncellenirken hata: ' + error.message, 'error');
+                })
+                .finally(() => {
+                    updateBtn.disabled = false;
+                    updateBtn.textContent = originalText;
+                    rankInput.disabled = false;
                 });
         };
 
