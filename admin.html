@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANEL | Yönetim</title>
+    <title>TEKNOKENT PROJEC ATÖLYE | Yönetim</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -47,6 +47,12 @@
             border-radius: 6px;
             cursor: pointer;
             font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(0, 183, 255, 0.4);
+            box-shadow: 0 0 10px rgba(0, 183, 255, 0.5);
         }
         
         .admin-container {
@@ -86,6 +92,18 @@
             color: var(--text-color);
             font-family: 'Share Tech Mono', monospace;
             margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 183, 255, 0.5);
+        }
+        
+        .form-input.error {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
         }
         
         .form-select {
@@ -108,10 +126,18 @@
             font-family: 'Orbitron', sans-serif;
             width: 100%;
             margin-top: 10px;
+            transition: all 0.3s ease;
         }
         
         .btn:hover {
             background: linear-gradient(45deg, rgba(255, 140, 0, 0.8), rgba(255, 140, 0, 0.4));
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
         
         .users-list {
@@ -130,38 +156,64 @@
             border-radius: 6px;
         }
         
-        .announcement-popup {
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: bold;
+        }
+        
+        .user-email {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .alert {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 20px;
+            right: 20px;
             background: var(--panel-bg);
-            border: 2px solid var(--neon-orange);
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 0 30px rgba(255, 140, 0, 0.7);
+            border: 1px solid var(--neon-red);
+            border-radius: 8px;
+            padding: 15px 20px;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(255, 0, 60, 0.5);
             z-index: 1000;
-            max-width: 500px;
-            width: 90%;
+            animation: slideInRight 0.3s ease;
         }
         
-        .popup-title {
+        .alert-success {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .password-strength {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        
+        .strength-weak {
+            color: var(--neon-red);
+        }
+        
+        .strength-medium {
             color: var(--neon-orange);
-            font-size: 24px;
-            margin-bottom: 15px;
-            text-align: center;
         }
         
-        .close-btn {
-            background: var(--neon-orange);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            margin-top: 15px;
-            width: 100%;
+        .strength-strong {
+            color: var(--neon-green);
         }
     </style>
 </head>
@@ -178,16 +230,17 @@
             <div class="panel-title">👥 Kullanıcı Yönetimi</div>
             
             <div class="form-group">
-                <input type="email" class="form-input" id="newUserEmail" placeholder="E-posta" required>
-                <input type="text" class="form-input" id="newUserName" placeholder="Kullanıcı Adı">
-                <input type="password" class="form-input" id="newUserPassword" placeholder="Parola">
+                <input type="email" class="form-input" id="newUserEmail" placeholder="E-posta (örnek: kullanici@teknokent.com)" required>
+                <input type="text" class="form-input" id="newUserName" placeholder="Kullanıcı Adı" required>
+                <input type="password" class="form-input" id="newUserPassword" placeholder="Parola (min. 6 karakter)" required>
+                <div class="password-strength" id="passwordStrength"></div>
                 <select class="form-select" id="newUserRank">
-                    <option value="Misafir">Misafir</option>
+                     <option value="Misafir">Misafir</option>
                     <option value="Operatör">Operatör</option>
                     <option value="Uzman Operatör">Uzman Operatör</option>
                     <option value="Kıdemli Operatör">Kıdemli Operatör</option>
                      <option value="Tim Lideri">Tim Lideri</option>
-                     <option value="Kıdemli Tim Lideri">Tim Lideri</option>
+                     <option value="Kıdemli Tim Lideri">Kıdemli Tim Lideri</option>
                       <option value="Tabur Komutanı">Tabur Komutanı</option>
                 </select>
                 <button class="btn" id="createUserBtn">Kullanıcı Oluştur</button>
@@ -215,13 +268,6 @@
         </div>
     </div>
 
-    <!-- Duyuru Popup -->
-    <div class="announcement-popup" id="announcementPopup" style="display: none;">
-        <div class="popup-title" id="popupTitle">DUYURU</div>
-        <div id="popupContent">Duyuru içeriği burada görünecek</div>
-        <button class="close-btn" onclick="closeAnnouncement()">ANLADIM</button>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-database.js";
@@ -243,6 +289,73 @@
 
         let currentUser = null;
 
+        // Alert fonksiyonu
+        function showAlert(message, type = 'error') {
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) {
+                document.body.removeChild(existingAlert);
+            }
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${type === 'success' ? 'alert-success' : ''}`;
+            alertDiv.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 5px;">
+                    ${type === 'success' ? '✔ BAŞARILI' : '⚠ HATA'}
+                </div>
+                <div>${message}</div>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (document.body.contains(alertDiv)) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Email validasyonu
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Şifre gücü kontrolü
+        function checkPasswordStrength(password) {
+            const strengthDiv = document.getElementById('passwordStrength');
+            
+            if (password.length === 0) {
+                strengthDiv.textContent = '';
+                return;
+            }
+            
+            if (password.length < 6) {
+                strengthDiv.textContent = '⚠️ Zayıf (min. 6 karakter)';
+                strengthDiv.className = 'password-strength strength-weak';
+                return 'weak';
+            }
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            if (strength <= 1) {
+                strengthDiv.textContent = '⚠️ Zayıf';
+                strengthDiv.className = 'password-strength strength-weak';
+                return 'weak';
+            } else if (strength <= 3) {
+                strengthDiv.textContent = '⚠️ Orta';
+                strengthDiv.className = 'password-strength strength-medium';
+                return 'medium';
+            } else {
+                strengthDiv.textContent = '✅ Güçlü';
+                strengthDiv.className = 'password-strength strength-strong';
+                return 'strong';
+            }
+        }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
@@ -256,8 +369,11 @@
                     
                     // Yetki kontrolü
                     if (!['Müdür', 'Amir'].includes(userData.rank)) {
-                        alert('Yönetim paneline erişim izniniz yok!');
-                        window.location.href = 'anasayfa.html';
+                        showAlert('Yönetim paneline erişim izniniz yok!', 'error');
+                        setTimeout(() => {
+                            window.location.href = 'anasayfa.html';
+                        }, 2000);
+                        return;
                     }
                 }
                 
@@ -268,92 +384,116 @@
             }
         });
 
+        // Şifre gücü kontrolü
+        document.getElementById('newUserPassword').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+
+        // Form validasyonu
+        document.getElementById('newUserEmail').addEventListener('blur', function() {
+            if (this.value && !isValidEmail(this.value)) {
+                this.classList.add('error');
+                showAlert('Geçerli bir e-posta adresi giriniz!', 'error');
+            } else {
+                this.classList.remove('error');
+            }
+        });
+
         // Kullanıcı oluşturma
         document.getElementById('createUserBtn').addEventListener('click', createUser);
 
         async function createUser() {
-    const email = document.getElementById('newUserEmail').value.trim();
-    const username = document.getElementById('newUserName').value.trim();
-    const password = document.getElementById('newUserPassword').value;
-    const rank = document.getElementById('newUserRank').value;
+            const email = document.getElementById('newUserEmail').value.trim();
+            const username = document.getElementById('newUserName').value.trim();
+            const password = document.getElementById('newUserPassword').value;
+            const rank = document.getElementById('newUserRank').value;
 
-    // Validasyon
-    if (!email || !username || !password) {
-        showAlert('Lütfen tüm alanları doldurun!', 'error');
-        return;
-    }
+            // Validasyon
+            if (!email || !username || !password) {
+                showAlert('Lütfen tüm alanları doldurun!', 'error');
+                return;
+            }
 
-    // Email format kontrolü - DAHA BASİT
-    if (!email.includes('@') || !email.includes('.')) {
-        showAlert('Geçerli bir e-posta adresi giriniz!', 'error');
-        document.getElementById('newUserEmail').classList.add('error');
-        return;
-    }
+            if (!isValidEmail(email)) {
+                showAlert('Geçerli bir e-posta adresi giriniz!', 'error');
+                document.getElementById('newUserEmail').classList.add('error');
+                return;
+            }
 
-    if (password.length < 6) {
-        showAlert('Şifre en az 6 karakter olmalıdır!', 'error');
-        return;
-    }
+            if (password.length < 6) {
+                showAlert('Şifre en az 6 karakter olmalıdır!', 'error');
+                return;
+            }
 
-    // Butonu devre dışı bırak
-    const createBtn = document.getElementById('createUserBtn');
-    createBtn.disabled = true;
-    createBtn.textContent = 'Oluşturuluyor...';
+            if (username.length < 2) {
+                showAlert('Kullanıcı adı en az 2 karakter olmalıdır!', 'error');
+                return;
+            }
 
-    try {
-        // Firebase Authentication'da kullanıcı oluştur
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        
-        // Realtime Database'de kullanıcı verilerini kaydet
-        await set(ref(database, 'users/' + user.uid), {
-            username: username,
-            email: email,
-            rank: rank,
-            status: 'offline',
-            created: Date.now(),
-            last_login: null
-        });
+            // Butonu devre dışı bırak
+            const createBtn = document.getElementById('createUserBtn');
+            createBtn.disabled = true;
+            createBtn.textContent = 'Oluşturuluyor...';
 
-        showAlert(`Kullanıcı başarıyla oluşturuldu: ${username}`, 'success');
-        clearUserForm();
-        loadUsers();
-        
-    } catch (error) {
-        console.error('Kullanıcı oluşturma hatası:', error);
-        
-        // Firebase hata mesajlarını Türkçe'ye çevir
-        let errorMessage = 'Kullanıcı oluşturulurken bir hata oluştu!';
-        
-        switch (error.code) {
-            case 'auth/email-already-in-use':
-                errorMessage = 'Bu e-posta adresi zaten kullanılıyor!';
-                break;
-            case 'auth/invalid-email':
-                errorMessage = 'Geçersiz e-posta formatı! Örnek: kullanici@mail.com';
-                break;
-            case 'auth/operation-not-allowed':
-                errorMessage = 'E-posta/şifre ile giriş etkin değil!';
-                break;
-            case 'auth/weak-password':
-                errorMessage = 'Şifre çok zayıf, daha güçlü bir şifre deneyin!';
-                break;
-            default:
-                errorMessage = `Hata: ${error.message}`;
+            try {
+                // Firebase Authentication'da kullanıcı oluştur
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                // Realtime Database'de kullanıcı verilerini kaydet
+                await set(ref(database, 'users/' + user.uid), {
+                    username: username,
+                    email: email,
+                    rank: rank,
+                    status: 'offline',
+                    created: Date.now(),
+                    last_login: null
+                });
+
+                showAlert(`Kullanıcı başarıyla oluşturuldu: ${username}`, 'success');
+                clearUserForm();
+                loadUsers();
+                
+            } catch (error) {
+                console.error('Kullanıcı oluşturma hatası:', error);
+                
+                // Firebase hata mesajlarını Türkçe'ye çevir
+                let errorMessage = 'Kullanıcı oluşturulurken bir hata oluştu!';
+                
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'Bu e-posta adresi zaten kullanılıyor!';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Geçersiz e-posta formatı!';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        errorMessage = 'E-posta/şifre ile giriş etkin değil!';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'Şifre çok zayıf, daha güçlü bir şifre deneyin!';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = 'Ağ hatası, internet bağlantınızı kontrol edin!';
+                        break;
+                    default:
+                        errorMessage = `Hata: ${error.message}`;
+                }
+                
+                showAlert(errorMessage, 'error');
+            } finally {
+                // Butonu tekrar aktif et
+                createBtn.disabled = false;
+                createBtn.textContent = 'Kullanıcı Oluştur';
+            }
         }
-        
-        showAlert(errorMessage, 'error');
-    } finally {
-        // Butonu tekrar aktif et
-        createBtn.disabled = false;
-        createBtn.textContent = 'Kullanıcı Oluştur';
-    }
-}
 
         function clearUserForm() {
             document.getElementById('newUserEmail').value = '';
             document.getElementById('newUserName').value = '';
             document.getElementById('newUserPassword').value = '';
+            document.getElementById('passwordStrength').textContent = '';
+            document.getElementById('newUserEmail').classList.remove('error');
         }
 
         function loadUsers() {
@@ -363,17 +503,22 @@
                 const container = document.getElementById('usersList');
                 container.innerHTML = '';
                 
+                if (!users) {
+                    container.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Kullanıcı bulunmuyor</div>';
+                    return;
+                }
+                
                 for (const userId in users) {
                     const user = users[userId];
                     const userDiv = document.createElement('div');
                     userDiv.className = 'user-item';
                     userDiv.innerHTML = `
-                        <div>
-                            <div>${user.username}</div>
-                            <div style="font-size: 12px; color: #888;">${user.email}</div>
+                        <div class="user-info">
+                            <div class="user-name">${user.username}</div>
+                            <div class="user-email">${user.email}</div>
                         </div>
                         <div>
-                            <select class="form-select" onchange="updateUserRank('${userId}', this.value)" 
+                             <select class="form-select" onchange="updateUserRank('${userId}', this.value)" 
                                     style="width: 120px; font-size: 12px;">
                                 <option value="Misafir" ${user.rank === 'Misafir' ? 'selected' : ''}>Misafir</option>
                                 <option value="Operatör" ${user.rank === 'Operatör' ? 'selected' : ''}>Üye</option>
@@ -389,50 +534,66 @@
                 }
             });
         }
-function isValidEmail(email) {
-    return email.includes('@') && email.includes('.');
-}
 
-document.getElementById('newUserEmail').addEventListener('blur', function() {
-    if (this.value && !isValidEmail(this.value)) {
-        this.classList.add('error');
-        showAlert('Geçerli bir e-posta adresi giriniz! Örnek: kullanici@mail.com', 'error');
-    } else {
-        this.classList.remove('error');
-    }
-});
         // Kullanıcı rütbesini güncelle
         window.updateUserRank = function(userId, newRank) {
-            set(ref(database, 'users/' + userId + '/rank'), newRank);
+            set(ref(database, 'users/' + userId + '/rank'), newRank)
+                .then(() => {
+                    showAlert('Kullanıcı rütbesi güncellendi!', 'success');
+                })
+                .catch((error) => {
+                    showAlert('Rütbe güncellenirken hata: ' + error.message, 'error');
+                });
         };
 
         // Duyuru gönderme
         document.getElementById('sendAnnouncementBtn').addEventListener('click', sendAnnouncement);
 
         function sendAnnouncement() {
-            const title = document.getElementById('announcementTitle').value;
-            const content = document.getElementById('announcementContent').value;
+            const title = document.getElementById('announcementTitle').value.trim();
+            const content = document.getElementById('announcementContent').value.trim();
 
-            if (title && content) {
-                const announcementsRef = ref(database, 'announcements');
-                push(announcementsRef, {
-                    title: title,
-                    content: content,
-                    timestamp: Date.now(),
-                    sender: currentUser.uid
-                });
-                
-                // Duyuruyu anında göster
-                showAnnouncementPopup(title, content);
-                
-                // Formu temizle
-                document.getElementById('announcementTitle').value = '';
-                document.getElementById('announcementContent').value = '';
-                
-                alert('Duyuru gönderildi!');
-            } else {
-                alert('Lütfen duyuru başlığı ve içeriğini doldurun!');
+            if (!title || !content) {
+                showAlert('Lütfen duyuru başlığı ve içeriğini doldurun!', 'error');
+                return;
             }
+
+            const announcementsRef = ref(database, 'announcements');
+            push(announcementsRef, {
+                title: title,
+                content: content,
+                timestamp: Date.now(),
+                sender: currentUser.uid
+            });
+
+            // Tüm kullanıcılara bildirim gönder
+            sendNotificationToAllUsers(title, content);
+
+            // Formu temizle
+            document.getElementById('announcementTitle').value = '';
+            document.getElementById('announcementContent').value = '';
+            
+            showAlert('Duyuru başarıyla gönderildi!', 'success');
+        }
+
+        function sendNotificationToAllUsers(title, content) {
+            const usersRef = ref(database, 'users');
+            get(usersRef).then((snapshot) => {
+                const users = snapshot.val();
+                if (users) {
+                    Object.keys(users).forEach(userId => {
+                        const userNotificationsRef = ref(database, `notifications/${userId}`);
+                        push(userNotificationsRef, {
+                            type: 'announcement',
+                            message: `Yeni duyuru: ${title}`,
+                            content: content,
+                            timestamp: Date.now(),
+                            read: false,
+                            action: 'view_announcement'
+                        });
+                    });
+                }
+            });
         }
 
         function loadAnnouncements() {
@@ -442,51 +603,27 @@ document.getElementById('newUserEmail').addEventListener('blur', function() {
                 const container = document.getElementById('announcementsList');
                 container.innerHTML = '';
                 
-                if (announcements) {
-                    Object.values(announcements)
-                        .sort((a, b) => b.timestamp - a.timestamp)
-                        .slice(0, 5)
-                        .forEach(announcement => {
-                            const announcementDiv = document.createElement('div');
-                            announcementDiv.className = 'user-item';
-                            announcementDiv.innerHTML = `
-                                <div>
-                                    <div style="font-weight: bold;">${announcement.title}</div>
-                                    <div style="font-size: 12px; color: #888;">${new Date(announcement.timestamp).toLocaleString()}</div>
-                                </div>
-                            `;
-                            container.appendChild(announcementDiv);
-                        });
+                if (!announcements) {
+                    container.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Duyuru bulunmuyor</div>';
+                    return;
                 }
+                
+                Object.values(announcements)
+                    .sort((a, b) => b.timestamp - a.timestamp)
+                    .slice(0, 5)
+                    .forEach(announcement => {
+                        const announcementDiv = document.createElement('div');
+                        announcementDiv.className = 'user-item';
+                        announcementDiv.innerHTML = `
+                            <div>
+                                <div style="font-weight: bold;">${announcement.title}</div>
+                                <div style="font-size: 12px; color: #888;">${new Date(announcement.timestamp).toLocaleString('tr-TR')}</div>
+                            </div>
+                        `;
+                        container.appendChild(announcementDiv);
+                    });
             });
         }
-
-        // Duyuru popup'ını göster
-        function showAnnouncementPopup(title, content) {
-            document.getElementById('popupTitle').textContent = title;
-            document.getElementById('popupContent').textContent = content;
-            document.getElementById('announcementPopup').style.display = 'block';
-        }
-
-        // Duyuru popup'ını kapat
-        window.closeAnnouncement = function() {
-            document.getElementById('announcementPopup').style.display = 'none';
-        };
-
-        // Yeni duyuruları dinle
-        const announcementsRef = ref(database, 'announcements');
-        onValue(announcementsRef, (snapshot) => {
-            const announcements = snapshot.val();
-            if (announcements) {
-                const latestAnnouncement = Object.values(announcements)
-                    .sort((a, b) => b.timestamp - a.timestamp)[0];
-                
-                // Son 10 saniye içindeki duyuruları göster
-                if (latestAnnouncement && Date.now() - latestAnnouncement.timestamp < 10000) {
-                    showAnnouncementPopup(latestAnnouncement.title, latestAnnouncement.content);
-                }
-            }
-        });
     </script>
 </body>
 </html>
