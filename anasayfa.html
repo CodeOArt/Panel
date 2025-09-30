@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEKNOKENT PROJEC ATÖLYE | Ana Sayfa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00b7ff;
+            --neon-orange: #ff8c00;
+            --neon-red: #ff003c;
+            --neon-green: #00ff41;
+            --dark-bg: #0a0a12;
+            --darker-bg: #050508;
+            --panel-bg: rgba(10, 15, 30, 0.85);
+            --text-color: #e0e0ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 183, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 140, 0, 0.1) 0%, transparent 20%),
+                linear-gradient(to bottom, var(--darker-bg), var(--dark-bg));
+            color: var(--text-color);
+            font-family: 'Orbitron', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: var(--panel-bg);
+            border-bottom: 1px solid rgba(0, 183, 255, 0.3);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 183, 255, 0.2);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-green));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-badge {
+            background: rgba(0, 183, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--neon-blue);
+            font-size: 14px;
+        }
+        
+        .notification-container {
+            position: relative;
+        }
+        
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            background: rgba(0, 183, 255, 0.1);
+            border: 1px solid transparent;
+        }
+        
+        .notification-bell:hover {
+            background: rgba(0, 183, 255, 0.2);
+            border-color: var(--neon-blue);
+            transform: scale(1.1);
+        }
+        
+        .notification-bell.has-notifications {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 140, 0, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 140, 0, 0);
+            }
+        }
+        
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--neon-red);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid var(--dark-bg);
+        }
+        
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 183, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .notification-dropdown.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 183, 255, 0.3);
+        }
+        
+        .notification-title {
+            color: var(--neon-blue);
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .clear-notifications {
+            background: rgba(255, 0, 60, 0.3);
+            border: 1px solid var(--neon-red);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .clear-notifications:hover {
+            background: rgba(255, 0, 60, 0.5);
+        }
+        
+        .notification-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(0, 183, 255, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(0, 183, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .notification-item:hover {
+            background: rgba(0, 183, 255, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .notification-item.unread {
+            border-left: 3px solid var(--neon-orange);
+        }
+        
+        .notification-type {
+            font-size: 12px;
+            color: var(--neon-orange);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .notification-message {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .notification-time {
+            font-size: 11px;
+            color: #888;
+            text-align: right;
+        }
+        
+        .no-notifications {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            font-style: italic;
+        }
+        
+        /* Main Content */
+        .main-container {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 70px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: var(--panel-bg);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 183, 255, 0.3);
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 183, 255, 0.2);
+        }
+        
+        .nav-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: rgba(0, 183, 255, 0.1);
+            border-color: var(--neon-blue);
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background: rgba(0, 183, 255, 0.2);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 183, 255, 0.3);
+        }
+        
+        /* Dashboard Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .dashboard-card {
+            background: var(--panel-bg);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 183, 255, 0.3);
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0, 183, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(0, 183, 255, 0.4);
+            border-color: var(--neon-blue);
+        }
+        
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--neon-blue);
+        }
+        
+        /* Online Users */
+        .online-users {
+            background: var(--panel-bg);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 183, 255, 0.3);
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 183, 255, 0.2);
+        }
+        
+        .users-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--neon-blue);
+            text-align: center;
+        }
+        
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            background: rgba(0, 183, 255, 0.1);
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .user-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--neon-green);
+        }
+        
+        /* Alert Styles */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-red);
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(255, 0, 60, 0.5);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .alert-success {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+        
+        .alert-title {
+            color: var(--neon-red);
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .alert-success .alert-title {
+            color: var(--neon-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">TPA</div>
+            <div class="logo-text">AGB Panel</div>
+        </div>
+        <div class="user-info">
+            <div class="user-badge" id="userRank">Misafir</div>
+            <div class="notification-container">
+                <div class="notification-bell" id="notificationBell">
+                    🔔
+                    <div class="notification-count" id="notificationCount">0</div>
+                </div>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-header">
+                        <div class="notification-title">Bildirimler</div>
+                        <button class="clear-notifications" id="clearNotifications">Temizle</button>
+                    </div>
+                    <div id="notificationList">
+                        <div class="no-notifications">Bildirim bulunmuyor</div>
+                    </div>
+                </div>
+            </div>
+            <div id="userName">Kullanıcı</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="nav-item active" data-page="dashboard">🏠 Ana Sayfa</div>
+            <div class="nav-item" data-page="profile">👤 Profil Ayarları</div>
+            <div class="nav-item" data-page="chat" id="chatBtn">💬 Sohbet</div>
+            <div class="nav-item" data-page="admin" id="adminBtn">⚙️ Yönetim</div>
+            <div class="nav-item" id="logoutBtn">🚪 Çıkış Yap</div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <div class="dashboard-card" data-page="profile">
+                <div class="card-icon">👤</div>
+                <div class="card-title">Profil Ayarları</div>
+                <p>Kullanıcı bilgilerinizi görüntüleyin ve düzenleyin</p>
+            </div>
+            
+            <div class="dashboard-card" data-page="chat" id="chatCard">
+                <div class="card-icon">💬</div>
+                <div class="card-title">Sohbet Odası</div>
+                <p>Diğer kullanıcılarla iletişim kurun</p>
+            </div>
+            
+            <div class="dashboard-card" data-page="admin" id="adminCard">
+                <div class="card-icon">⚙️</div>
+                <div class="card-title">Yönetim Paneli</div>
+                <p>Sistem yönetimi ve kullanıcı işlemleri</p>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-icon">📊</div>
+                <div class="card-title">İstatistikler</div>
+                <p>Sistem kullanım istatistikleri ve raporlar</p>
+            </div>
+        </div>
+
+        <!-- Online Users -->
+        <div class="online-users">
+            <div class="users-title">🔴 Çevrimiçi Kullanıcılar</div>
+            <div class="user-list" id="onlineUsers">
+                <!-- Kullanıcılar JavaScript ile eklenecek -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-app.js";
+        import { getDatabase, ref, onValue, get, set, update, push, remove } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAoHT3BDfKcimv-43vkyYXoSVpOJ5vIsM",
+            authDomain: "projecweb-e3382.firebaseapp.com",
+            databaseURL: "https://projecweb-e3382-default-rtdb.firebaseio.com",
+            projectId: "projecweb-e3382",
+            storageBucket: "projecweb-e3382.appspot.com",
+            messagingSenderId: "867646029095",
+            appId: "1:867646029095:web:4d708255cc7b34f758bd02"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+        let currentUser = null;
+        let currentUserData = null;
+
+        // Bildirim sistemi
+        function initializeNotifications() {
+            const notificationBell = document.getElementById('notificationBell');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            const clearButton = document.getElementById('clearNotifications');
+
+            // Bildirim zili tıklama
+            notificationBell.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notificationDropdown.classList.toggle('show');
+                updateNotificationBell();
+            });
+
+            // Tüm bildirimleri temizle
+            clearButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                clearAllNotifications();
+            });
+
+            // Dışarı tıklayınca kapat
+            document.addEventListener('click', () => {
+                notificationDropdown.classList.remove('show');
+            });
+
+            // Dropdown içinde tıklamaları engelle
+            notificationDropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Bildirimleri dinle
+            if (currentUser) {
+                const notificationsRef = ref(database, `notifications/${currentUser.uid}`);
+                onValue(notificationsRef, (snapshot) => {
+                    loadNotifications(snapshot.val());
+                });
+            }
+        }
+
+        function loadNotifications(notifications) {
+            const container = document.getElementById('notificationList');
+            const countElement = document.getElementById('notificationCount');
+            
+            if (!notifications) {
+                container.innerHTML = '<div class="no-notifications">Bildirim bulunmuyor</div>';
+                countElement.textContent = '0';
+                updateNotificationBell();
+                return;
+            }
+
+            let unreadCount = 0;
+            container.innerHTML = '';
+
+            // Bildirimleri tarihe göre sırala (yeniden eskiye)
+            const sortedNotifications = Object.entries(notifications)
+                .sort(([,a], [,b]) => b.timestamp - a.timestamp);
+
+            sortedNotifications.forEach(([key, notification]) => {
+                if (!notification.read) {
+                    unreadCount++;
+                }
+
+                const notificationItem = document.createElement('div');
+                notificationItem.className = `notification-item ${notification.read ? '' : 'unread'}`;
+                notificationItem.innerHTML = `
+                    <div class="notification-type">${getNotificationType(notification.type)}</div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-time">${formatTime(notification.timestamp)}</div>
+                `;
+                
+                notificationItem.addEventListener('click', () => {
+                    markNotificationAsRead(key);
+                    handleNotificationAction(notification);
+                });
+
+                container.appendChild(notificationItem);
+            });
+
+            countElement.textContent = unreadCount;
+            updateNotificationBell();
+        }
+
+        function getNotificationType(type) {
+            const types = {
+                'announcement': '📢 Duyuru',
+                'message': '💬 Mesaj',
+                'system': '⚙️ Sistem',
+                'warning': '⚠️ Uyarı'
+            };
+            return types[type] || '📌 Bildirim';
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) { // 1 dakikadan az
+                return 'Şimdi';
+            } else if (diff < 3600000) { // 1 saatten az
+                return `${Math.floor(diff / 60000)} dakika önce`;
+            } else if (diff < 86400000) { // 1 günden az
+                return `${Math.floor(diff / 3600000)} saat önce`;
+            } else {
+                return date.toLocaleDateString('tr-TR');
+            }
+        }
+
+        function updateNotificationBell() {
+            const bell = document.getElementById('notificationBell');
+            const count = parseInt(document.getElementById('notificationCount').textContent);
+            
+            if (count > 0) {
+                bell.classList.add('has-notifications');
+            } else {
+                bell.classList.remove('has-notifications');
+            }
+        }
+
+        function markNotificationAsRead(notificationKey) {
+            if (!currentUser) return;
+            
+            const notificationRef = ref(database, `notifications/${currentUser.uid}/${notificationKey}`);
+            update(notificationRef, {
+                read: true,
+                readAt: Date.now()
+            });
+        }
+
+        function clearAllNotifications() {
+            if (!currentUser) return;
+            
+            if (confirm('Tüm bildirimleri silmek istediğinizden emin misiniz?')) {
+                const notificationsRef = ref(database, `notifications/${currentUser.uid}`);
+                remove(notificationsRef);
+            }
+        }
+
+        function handleNotificationAction(notification) {
+            switch (notification.action) {
+                case 'go_to_chat':
+                    window.location.href = 'chat.html';
+                    break;
+                case 'go_to_admin':
+                    window.location.href = 'admin.html';
+                    break;
+                case 'view_announcement':
+                    // Duyuru görüntüleme işlemi
+                    showAlert(notification.message, 'success');
+                    break;
+                default:
+                    // Varsayılan işlem
+                    break;
+            }
+        }
+
+        // Örnek bildirim oluşturma (test için)
+        function createSampleNotification() {
+            if (!currentUser) return;
+            
+            const notificationsRef = ref(database, `notifications/${currentUser.uid}`);
+            push(notificationsRef, {
+                type: 'system',
+                message: 'Sisteme hoş geldiniz!',
+                timestamp: Date.now(),
+                read: false,
+                action: 'none'
+            });
+
+            // 3 saniye sonra ikinci bildirim
+            setTimeout(() => {
+                push(notificationsRef, {
+                    type: 'announcement',
+                    message: 'Yeni sistem güncellemesi mevcut',
+                    timestamp: Date.now(),
+                    read: false,
+                    action: 'view_announcement'
+                });
+            }, 3000);
+        }
+
+        // Kullanıcı bilgilerini yükle
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const userRef = ref(database, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                
+                if (snapshot.exists()) {
+                    currentUserData = snapshot.val();
+                    document.getElementById('userName').textContent = currentUserData.username || user.email;
+                    document.getElementById('userRank').textContent = currentUserData.rank || 'Misafir';
+                    
+                    // Yetki kontrolü
+                    const userRank = currentUserData.rank || 'Misafir';
+                    const chatBtn = document.getElementById('chatBtn');
+                    const adminBtn = document.getElementById('adminBtn');
+                    const chatCard = document.getElementById('chatCard');
+                    const adminCard = document.getElementById('adminCard');
+                    
+                    // Misafir sohbet erişimi yok
+                    if (userRank === 'Misafir') {
+                        chatBtn.style.opacity = '0.5';
+                        chatBtn.style.cursor = 'not-allowed';
+                        chatCard.style.opacity = '0.5';
+                        chatCard.style.cursor = 'not-allowed';
+                    }
+                    
+                    // Sadece Müdür ve Şef yönetim erişimi
+                    if (!['Müdür', 'Amir'].includes(userRank)) {
+                        adminBtn.style.opacity = '0.5';
+                        adminBtn.style.cursor = 'not-allowed';
+                        adminCard.style.opacity = '0.5';
+                        adminCard.style.cursor = 'not-allowed';
+                    }
+                    
+                    // Kullanıcıyı online olarak işaretle
+                    set(ref(database, 'users/' + user.uid + '/status'), 'online');
+                    
+                    // Bildirim sistemini başlat
+                    initializeNotifications();
+                    
+                    // Test bildirimleri oluştur
+                    createSampleNotification();
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Çevrimiçi kullanıcıları dinle
+        const onlineUsersRef = ref(database, 'users');
+        onValue(onlineUsersRef, (snapshot) => {
+            const users = snapshot.val();
+            const onlineUsersList = document.getElementById('onlineUsers');
+            onlineUsersList.innerHTML = '';
+            
+            if (!users) {
+                onlineUsersList.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Çevrimiçi kullanıcı yok</div>';
+                return;
+            }
+            
+            let hasOnlineUsers = false;
+            
+            for (const userId in users) {
+                const user = users[userId];
+                if (user.status === 'online') {
+                    hasOnlineUsers = true;
+                    const userItem = document.createElement('div');
+                    userItem.className = 'user-item';
+                    userItem.innerHTML = `
+                        <div class="user-avatar">${user.username ? user.username.charAt(0).toUpperCase() : 'U'}</div>
+                        <div>
+                            <div>${user.username || 'Kullanıcı'}</div>
+                            <div style="font-size: 12px; color: #888;">${user.rank || 'Misafir'}</div>
+                        </div>
+                        <div class="user-status"></div>
+                    `;
+                    onlineUsersList.appendChild(userItem);
+                }
+            }
+            
+            if (!hasOnlineUsers) {
+                onlineUsersList.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Çevrimiçi kullanıcı yok</div>';
+            }
+        });
+
+        // Navigasyon
+        document.querySelectorAll('.nav-item, .dashboard-card').forEach(item => {
+            item.addEventListener('click', function() {
+                const page = this.getAttribute('data-page');
+                
+                if (!page) return;
+                
+                // Yetki kontrolleri
+                if (page === 'chat') {
+                    const userRank = document.getElementById('userRank').textContent;
+                    if (userRank === 'Misafir') {
+                        showAlert('ERİŞİM REDDEDİLDİ: Sohbet odasına erişim izniniz yok', 'error');
+                        return;
+                    }
+                }
+                
+                if (page === 'admin') {
+                    const userRank = document.getElementById('userRank').textContent;
+                    if (!['Müdür', 'Amir'].includes(userRank)) {
+                        showAlert('ERİŞİM REDDEDİLDİ: Yönetim paneline erişim izniniz yok', 'error');
+                        return;
+                    }
+                }
+                
+                if (page) {
+                    window.location.href = page + '.html';
+                }
+            });
+        });
+
+        // Çıkış butonu
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            const user = auth.currentUser;
+            if (user) {
+                set(ref(database, 'users/' + user.uid + '/status'), 'offline');
+                signOut(auth).then(() => {
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+
+        // Alert fonksiyonu
+        function showAlert(message, type = 'error') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${type === 'success' ? 'alert-success' : ''}`;
+            alertDiv.innerHTML = `
+                <div class="alert-title">${type === 'success' ? '✔ ONAYLANDI' : '⚠ UYARI'}</div>
+                <div>${message}</div>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Sayfadan çıkarken offline olarak işaretle
+        window.addEventListener('beforeunload', async () => {
+            if (currentUser) {
+                try {
+                    await set(ref(database, 'users/' + currentUser.uid + '/status'), 'offline');
+                } catch (error) {
+                    console.error('Status güncelleme hatası:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
