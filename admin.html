@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEKNOKENT PROJEC ATÖLYE | Yönetim</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00b7ff;
+            --neon-orange: #ff8c00;
+            --neon-red: #ff003c;
+            --neon-green: #00ff41;
+            --dark-bg: #0a0a12;
+            --darker-bg: #050508;
+            --panel-bg: rgba(10, 15, 30, 0.85);
+            --text-color: #e0e0ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            font-family: 'Orbitron', sans-serif;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: var(--panel-bg);
+            border-bottom: 1px solid rgba(0, 183, 255, 0.3);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            background: rgba(0, 183, 255, 0.2);
+            border: 1px solid var(--neon-blue);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .admin-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .admin-panel {
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 183, 255, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0, 183, 255, 0.2);
+        }
+        
+        .panel-title {
+            color: var(--neon-blue);
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-input {
+            width: 100%;
+            background: rgba(5, 10, 20, 0.7);
+            border: 1px solid rgba(0, 183, 255, 0.3);
+            border-radius: 6px;
+            padding: 12px;
+            color: var(--text-color);
+            font-family: 'Share Tech Mono', monospace;
+            margin-bottom: 10px;
+        }
+        
+        .form-select {
+            width: 100%;
+            background: rgba(5, 10, 20, 0.7);
+            border: 1px solid rgba(0, 183, 255, 0.3);
+            border-radius: 6px;
+            padding: 12px;
+            color: var(--text-color);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, rgba(0, 183, 255, 0.8), rgba(0, 183, 255, 0.4));
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(45deg, rgba(255, 140, 0, 0.8), rgba(255, 140, 0, 0.4));
+        }
+        
+        .users-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(0, 183, 255, 0.1);
+            border-radius: 6px;
+        }
+        
+        .announcement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--panel-bg);
+            border: 2px solid var(--neon-orange);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.7);
+            z-index: 1000;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .popup-title {
+            color: var(--neon-orange);
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .close-btn {
+            background: var(--neon-orange);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            margin-top: 15px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='anasayfa.html'">← Ana Sayfa</button>
+        <h1>⚙️ Yönetim Paneli</h1>
+        <div id="userInfo"></div>
+    </div>
+
+    <div class="admin-container">
+        <!-- Kullanıcı Yönetimi -->
+        <div class="admin-panel">
+            <div class="panel-title">👥 Kullanıcı Yönetimi</div>
+            
+            <div class="form-group">
+                <input type="email" class="form-input" id="newUserEmail" placeholder="E-posta">
+                <input type="text" class="form-input" id="newUserName" placeholder="Kullanıcı Adı">
+                <input type="password" class="form-input" id="newUserPassword" placeholder="Parola">
+                <select class="form-select" id="newUserRank">
+                    <option value="Misafir">Misafir</option>
+                    <option value="Operatör">Operatör</option>
+                    <option value="Uzman Operatör">Uzman Operatör</option>
+                    <option value="Kıdemli Operatör">Kıdemli Operatör</option>
+                     <option value="Tim Lideri">Tim Lideri</option>
+                     <option value="Kıdemli Tim Lideri">Tim Lideri</option>
+                      <option value="Tabur Komutanı">Tabur Komutanı</option>
+                </select>
+                <button class="btn" id="createUserBtn">Kullanıcı Oluştur</button>
+            </div>
+            
+            <div class="users-list" id="usersList">
+                <!-- Kullanıcılar buraya eklenecek -->
+            </div>
+        </div>
+
+        <!-- Duyuru Yönetimi -->
+        <div class="admin-panel">
+            <div class="panel-title">📢 Duyuru Yönetimi</div>
+            
+            <div class="form-group">
+                <input type="text" class="form-input" id="announcementTitle" placeholder="Duyuru Başlığı">
+                <textarea class="form-input" id="announcementContent" placeholder="Duyuru İçeriği" rows="4"></textarea>
+                <button class="btn" id="sendAnnouncementBtn">Duyuru Gönder</button>
+            </div>
+            
+            <div class="panel-title" style="margin-top: 30px;">📋 Son Duyurular</div>
+            <div id="announcementsList">
+                <!-- Duyurular buraya eklenecek -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Duyuru Popup -->
+    <div class="announcement-popup" id="announcementPopup" style="display: none;">
+        <div class="popup-title" id="popupTitle">DUYURU</div>
+        <div id="popupContent">Duyuru içeriği burada görünecek</div>
+        <button class="close-btn" onclick="closeAnnouncement()">ANLADIM</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAoHT3BDfKcimv-43vkyYXoSVpOJ5vIsM",
+            authDomain: "projecweb-e3382.firebaseapp.com",
+            databaseURL: "https://projecweb-e3382-default-rtdb.firebaseio.com",
+            projectId: "projecweb-e3382",
+            storageBucket: "projecweb-e3382.appspot.com",
+            messagingSenderId: "867646029095",
+            appId: "1:867646029095:web:4d708255cc7b34f758bd02"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const userRef = ref(database, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    document.getElementById('userInfo').textContent = 
+                        `${userData.username} - ${userData.rank}`;
+                    
+                    // Yetki kontrolü
+                    if (!['Müdür', 'Amir'].includes(userData.rank)) {
+                        alert('Yönetim paneline erişim izniniz yok!');
+                        window.location.href = 'anasayfa.html';
+                    }
+                }
+                
+                loadUsers();
+                loadAnnouncements();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Kullanıcı oluşturma
+        document.getElementById('createUserBtn').addEventListener('click', createUser);
+
+        async function createUser() {
+            const email = document.getElementById('newUserEmail').value;
+            const username = document.getElementById('newUserName').value;
+            const password = document.getElementById('newUserPassword').value;
+            const rank = document.getElementById('newUserRank').value;
+
+            if (email && username && password) {
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                    
+                    // Kullanıcı verilerini kaydet
+                    await set(ref(database, 'users/' + user.uid), {
+                        username: username,
+                        email: email,
+                        rank: rank,
+                        status: 'offline',
+                        created: Date.now()
+                    });
+                    
+                    alert('Kullanıcı başarıyla oluşturuldu!');
+                    clearUserForm();
+                    loadUsers();
+                    
+                } catch (error) {
+                    alert('Kullanıcı oluşturulurken hata: ' + error.message);
+                }
+            } else {
+                alert('Lütfen tüm alanları doldurun!');
+            }
+        }
+
+        function clearUserForm() {
+            document.getElementById('newUserEmail').value = '';
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserPassword').value = '';
+        }
+
+        function loadUsers() {
+            const usersRef = ref(database, 'users');
+            onValue(usersRef, (snapshot) => {
+                const users = snapshot.val();
+                const container = document.getElementById('usersList');
+                container.innerHTML = '';
+                
+                for (const userId in users) {
+                    const user = users[userId];
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'user-item';
+                    userDiv.innerHTML = `
+                        <div>
+                            <div>${user.username}</div>
+                            <div style="font-size: 12px; color: #888;">${user.email}</div>
+                        </div>
+                        <div>
+                            <select class="form-select" onchange="updateUserRank('${userId}', this.value)" 
+                                    style="width: 120px; font-size: 12px;">
+                                <option value="Misafir" ${user.rank === 'Misafir' ? 'selected' : ''}>Misafir</option>
+                                <option value="Operatör" ${user.rank === 'Operatör' ? 'selected' : ''}>Üye</option>
+                                <option value="Uzman Operatör" ${user.rank === 'Uzman Operatör' ? 'selected' : ''}>Uzman Operatör</option>
+                                <option value="Kıdemli Operatör" ${user.rank === 'Kıdemli Operatör' ? 'selected' : ''}>Kıdemli Operatör</option>
+                                <option value="Tim Lideri" ${user.rank === 'Tim Lideri' ? 'selected' : ''}>Tim Lideri</option>
+                                <option value="Kıdemli Tim Lideri" ${user.rank === 'Kıdemli Tim Lideri' ? 'selected' : ''}>Kıdemli Tim Lideri</option>
+                                <option value="Tabur Komutanı" ${user.rank === 'Tabur Komutanı' ? 'selected' : ''}>Tabur Komutanı</option>
+                            </select>
+                        </div>
+                    `;
+                    container.appendChild(userDiv);
+                }
+            });
+        }
+
+        // Kullanıcı rütbesini güncelle
+        window.updateUserRank = function(userId, newRank) {
+            set(ref(database, 'users/' + userId + '/rank'), newRank);
+        };
+
+        // Duyuru gönderme
+        document.getElementById('sendAnnouncementBtn').addEventListener('click', sendAnnouncement);
+
+        function sendAnnouncement() {
+            const title = document.getElementById('announcementTitle').value;
+            const content = document.getElementById('announcementContent').value;
+
+            if (title && content) {
+                const announcementsRef = ref(database, 'announcements');
+                push(announcementsRef, {
+                    title: title,
+                    content: content,
+                    timestamp: Date.now(),
+                    sender: currentUser.uid
+                });
+                
+                // Duyuruyu anında göster
+                showAnnouncementPopup(title, content);
+                
+                // Formu temizle
+                document.getElementById('announcementTitle').value = '';
+                document.getElementById('announcementContent').value = '';
+                
+                alert('Duyuru gönderildi!');
+            } else {
+                alert('Lütfen duyuru başlığı ve içeriğini doldurun!');
+            }
+        }
+
+        function loadAnnouncements() {
+            const announcementsRef = ref(database, 'announcements');
+            onValue(announcementsRef, (snapshot) => {
+                const announcements = snapshot.val();
+                const container = document.getElementById('announcementsList');
+                container.innerHTML = '';
+                
+                if (announcements) {
+                    Object.values(announcements)
+                        .sort((a, b) => b.timestamp - a.timestamp)
+                        .slice(0, 5)
+                        .forEach(announcement => {
+                            const announcementDiv = document.createElement('div');
+                            announcementDiv.className = 'user-item';
+                            announcementDiv.innerHTML = `
+                                <div>
+                                    <div style="font-weight: bold;">${announcement.title}</div>
+                                    <div style="font-size: 12px; color: #888;">${new Date(announcement.timestamp).toLocaleString()}</div>
+                                </div>
+                            `;
+                            container.appendChild(announcementDiv);
+                        });
+                }
+            });
+        }
+
+        // Duyuru popup'ını göster
+        function showAnnouncementPopup(title, content) {
+            document.getElementById('popupTitle').textContent = title;
+            document.getElementById('popupContent').textContent = content;
+            document.getElementById('announcementPopup').style.display = 'block';
+        }
+
+        // Duyuru popup'ını kapat
+        window.closeAnnouncement = function() {
+            document.getElementById('announcementPopup').style.display = 'none';
+        };
+
+        // Yeni duyuruları dinle
+        const announcementsRef = ref(database, 'announcements');
+        onValue(announcementsRef, (snapshot) => {
+            const announcements = snapshot.val();
+            if (announcements) {
+                const latestAnnouncement = Object.values(announcements)
+                    .sort((a, b) => b.timestamp - a.timestamp)[0];
+                
+                // Son 10 saniye içindeki duyuruları göster
+                if (latestAnnouncement && Date.now() - latestAnnouncement.timestamp < 10000) {
+                    showAnnouncementPopup(latestAnnouncement.title, latestAnnouncement.content);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
