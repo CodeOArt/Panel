@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGB Panel | Erişim Kontrolü</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00b7ff;
+            --neon-orange: #ff8c00;
+            --neon-red: #ff003c;
+            --neon-green: #00ff41;
+            --dark-bg: #0a0a12;
+            --darker-bg: #050508;
+            --panel-bg: rgba(10, 15, 30, 0.85);
+            --text-color: #e0e0ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 183, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 140, 0, 0.1) 0%, transparent 20%),
+                linear-gradient(to bottom, var(--darker-bg), var(--dark-bg));
+            color: var(--text-color);
+            font-family: 'Orbitron', sans-serif;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Matrix efekti arka plan için */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        /* Ana giriş kutusu */
+        #login-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            background-color: var(--panel-bg);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 
+                0 0 20px rgba(0, 183, 255, 0.3),
+                inset 0 0 20px rgba(0, 183, 255, 0.1);
+            border: 1px solid rgba(0, 183, 255, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+        
+        /* Başlık animasyonu */
+        #access-code {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        #access-code span {
+            display: inline-block;
+            opacity: 0;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+                text-shadow: 0 0 5px var(--neon-blue);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(0);
+                text-shadow: 0 0 15px var(--neon-blue), 0 0 20px var(--neon-blue);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(10px);
+                text-shadow: 0 0 5px var(--neon-blue);
+            }
+        }
+        
+        /* Giriş alanları */
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(5, 10, 20, 0.7);
+            border: 1px solid rgba(0, 183, 255, 0.3);
+            border-radius: 4px;
+            color: var(--text-color);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 183, 255, 0.5);
+        }
+        
+        .input-label {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            font-size: 16px;
+            color: rgba(224, 224, 255, 0.7);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .input-field:focus + .input-label,
+        .input-field:not(:placeholder-shown) + .input-label {
+            top: -20px;
+            left: 5px;
+            font-size: 12px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        /* Giriş butonu */
+        #login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, rgba(0, 183, 255, 0.8), rgba(0, 183, 255, 0.4));
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #login-btn:hover {
+            background: linear-gradient(45deg, rgba(255, 140, 0, 0.8), rgba(255, 140, 0, 0.4));
+            box-shadow: 0 0 15px rgba(255, 140, 0, 0.7);
+        }
+        
+        #login-btn:active {
+            transform: scale(0.98);
+        }
+        
+        #login-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        #login-btn:hover::after {
+            left: 100%;
+        }
+        
+        /* Yanıp sönen noktalar */
+        .scanning-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            margin: 0 5px;
+            animation: scanning 1.5s infinite ease-in-out;
+        }
+        
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes scanning {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+        }
+        
+        /* Hata mesajları */
+        .alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 16px;
+            z-index: 100;
+            transition: opacity 0.5s;
+        }
+        
+        .alert-error {
+            background-color: rgba(255, 0, 60, 0.8);
+            color: white;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+        }
+        
+        .alert-success {
+            background-color: rgba(0, 255, 65, 0.8);
+            color: white;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+        }
+        
+        .alert-denied {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            background-color: rgba(10, 10, 20, 0.95);
+            border: 2px solid var(--neon-red);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            color: var(--neon-red);
+            text-shadow: 0 0 10px var(--neon-red);
+            box-shadow: 0 0 30px rgba(255, 0, 60, 0.7);
+            z-index: 100;
+            animation: denied-pulse 0.5s infinite alternate;
+        }
+        
+        @keyframes denied-pulse {
+            from {
+                box-shadow: 0 0 30px rgba(255, 0, 60, 0.7);
+            }
+            to {
+                box-shadow: 0 0 50px rgba(255, 0, 60, 0.9);
+            }
+        }
+        
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: rgba(224, 224, 255, 0.5);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix efekti arka plan -->
+    <canvas id="matrix-bg"></canvas>
+    
+    <!-- Giriş konteyneri -->
+    <div id="login-container">
+        <h1 id="access-code">
+            <span>E</span>
+            <span>R</span>
+            <span>İ</span>
+            <span>Ş</span>
+            <span>İ</span>
+            <span>M</span>
+            <span> </span>
+            <span>K</span>
+            <span>O</span>
+            <span>N</span>
+            <span>T</span>
+            <span>R</span>
+            <span>O</span>
+            <span>L</span>
+            <span>Ü</span>
+        </h1>
+        
+        <div class="input-group">
+            <input type="email" id="email" class="input-field" placeholder=" " required>
+            <label for="email" class="input-label">E-POSTA</label>
+        </div>
+        
+        <div class="input-group">
+            <input type="password" id="password" class="input-field" placeholder=" " required>
+            <label for="password" class="input-label">PAROLA</label>
+        </div>
+        
+        <button id="login-btn">GİRİŞ YAP</button>
+        
+        <div class="scanning-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        AGB | PERSONEL BİLGİLENDİRME SİSTEMİ
+    </div>
+
+    <script type="module">
+        // Firebase modüllerini içe aktar
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-app.js";
+        import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-auth.js";
+        
+        // Firebase yapılandırması
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAoHT3BDfKcimv-43vkyYXoSVpOJ5vIsM",
+            authDomain: "projecweb-e3382.firebaseapp.com",
+            databaseURL: "https://projecweb-e3382-default-rtdb.firebaseio.com",
+            projectId: "projecweb-e3382",
+            storageBucket: "projecweb-e3382.appspot.com",
+            messagingSenderId: "867646029095",
+            appId: "1:867646029095:web:4d708255cc7b34f758bd02"
+        };
+        
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+        
+        // DOM elementleri
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const loginButton = document.getElementById("login-btn");
+        
+        // Başarısız giriş denemesi sayacı
+        let failedAttempts = 0;
+        
+        // Giriş butonu tıklama olayı
+        loginButton.addEventListener('click', (e) => {
+            if (failedAttempts < 3) {
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        // Giriş başarılı
+                        const user = userCredential.user;
+                        const dt = new Date();
+                        
+                        // Kullanıcı bilgilerini güncelle
+                        update(ref(database, 'users/' + user.uid), {
+                            last_login: dt,
+                            status: 'online'
+                        });
+                        
+                        // Başarılı giriş mesajı
+                        showAlert('ERİŞİM ONAYLANDI - SİSTEME YÖNLENDİRİLİYORSUNUZ', 'success');
+                        
+                        // 3 saniye sonra ana sayfaya yönlendir
+                        setTimeout(() => {
+                            window.location.href = 'anasayfa.html';
+                        }, 3000);
+                        
+                    })
+                    .catch((error) => {
+                        // Giriş başarısız
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        
+                        failedAttempts++;
+                        
+                        if (failedAttempts < 3) {
+                            showAlert('HATALI GİRİŞ - ' + failedAttempts + '/3 DENEME', 'error');
+                        } else {
+                            showAccessDenied();
+                        }
+                    });
+            } else {
+                showAccessDenied();
+            }
+        });
+        
+        // Hata mesajı göster
+        function showAlert(message, type) {
+            // Önceki uyarıları temizle
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) {
+                document.body.removeChild(existingAlert);
+            }
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            document.body.appendChild(alertDiv);
+            
+            // 3 saniye sonra uyarıyı kaldır
+            setTimeout(() => {
+                if (document.body.contains(alertDiv)) {
+                    alertDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        if (document.body.contains(alertDiv)) {
+                            document.body.removeChild(alertDiv);
+                        }
+                    }, 500);
+                }
+            }, 3000);
+        }
+        
+        // Erişim reddedildi mesajı
+        function showAccessDenied() {
+            // Önceki uyarıları temizle
+            const existingAlert = document.querySelector('.alert-denied');
+            if (existingAlert) {
+                document.body.removeChild(existingAlert);
+            }
+            
+            const deniedDiv = document.createElement('div');
+            deniedDiv.className = 'alert-denied';
+            deniedDiv.innerHTML = `
+                <h2>ERİŞİM REDDEDİLDİ</h2>
+                <p>Hatalı giriş</p>
+               
+            `;
+             /*<p>3 BAŞARISIZ GİRİŞ DENEMESİ</p>*/
+            document.body.appendChild(deniedDiv);
+            
+            // Alarm sesi çal
+            const alarmSound = new Audio('alarm.wav');
+            alarmSound.play();
+            
+            // Yanıp sönme efekti
+            let isVisible = true;
+            const blinkInterval = setInterval(() => {
+                deniedDiv.style.display = isVisible ? 'none' : 'block';
+                isVisible = !isVisible;
+            }, 500);
+            
+            // 5 saniye sonra mesajı kaldır
+            setTimeout(() => {
+                clearInterval(blinkInterval);
+                if (document.body.contains(deniedDiv)) {
+                    document.body.removeChild(deniedDiv);
+                }
+            }, 5000);
+        }
+        
+        // Kullanıcı durumunu izle
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Kullanıcı oturum açmış
+                console.log("Kullanıcı oturum açtı:", user.email);
+            } else {
+                // Kullanıcı oturum açmamış
+                console.log("Kullanıcı oturum açmadı");
+            }
+        });
+        
+        // Başlık animasyonu
+        const spans = document.querySelectorAll('#access-code span');
+        let index = 0;
+        
+        function showSpan() {
+            if (index >= spans.length) {
+                clearInterval(intervalId);
+                return;
+            }
+            
+            spans[index].style.opacity = 1;
+            index++;
+        }
+        
+        const intervalId = setInterval(showSpan, 100);
+        
+        // Matrix efekti
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const charArray = chars.split("");
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(5, 5, 8, 0.04)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "#00b7ff";
+            ctx.font = fontSize + "px 'Share Tech Mono'";
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 35);
+        
+        // Pencere boyutu değiştiğinde canvas'ı yeniden boyutlandır
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
