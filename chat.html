@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEKNOKENT PROJEC ATÖLYE | Sohbet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00b7ff;
+            --neon-orange: #ff8c00;
+            --neon-red: #ff003c;
+            --neon-green: #00ff41;
+            --dark-bg: #0a0a12;
+            --darker-bg: #050508;
+            --panel-bg: rgba(10, 15, 30, 0.85);
+            --text-color: #e0e0ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            font-family: 'Orbitron', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: var(--panel-bg);
+            border-bottom: 1px solid rgba(0, 183, 255, 0.3);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .back-btn {
+            background: rgba(0, 183, 255, 0.2);
+            border: 1px solid var(--neon-blue);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(0, 183, 255, 0.4);
+            box-shadow: 0 0 10px rgba(0, 183, 255, 0.5);
+        }
+        
+        .chat-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .chat-main {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .chat-messages {
+            background: var(--panel-bg);
+            border-right: 1px solid rgba(0, 183, 255, 0.3);
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(0, 183, 255, 0.1);
+            border: 1px solid rgba(0, 183, 255, 0.2);
+            animation: messageSlide 0.3s ease;
+            position: relative;
+        }
+        
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .message-sender {
+            color: var(--neon-blue);
+            font-weight: bold;
+        }
+        
+        .message-time {
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .message-rank {
+            background: rgba(255, 140, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .message-content {
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+        
+        .message-actions {
+            margin-top: 10px;
+            text-align: right;
+        }
+        
+        .delete-btn {
+            background: rgba(255, 0, 60, 0.3);
+            border: 1px solid var(--neon-red);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(255, 0, 60, 0.5);
+            box-shadow: 0 0 8px rgba(255, 0, 60, 0.5);
+        }
+        
+        .chat-input-container {
+            background: var(--panel-bg);
+            border-top: 1px solid rgba(0, 183, 255, 0.3);
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        
+        .message-input {
+            flex: 1;
+            background: rgba(5, 10, 20, 0.7);
+            border: 1px solid rgba(0, 183, 255, 0.3);
+            border-radius: 6px;
+            padding: 12px;
+            color: var(--text-color);
+            font-family: 'Share Tech Mono', monospace;
+            transition: all 0.3s ease;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 183, 255, 0.5);
+        }
+        
+        .send-btn {
+            background: linear-gradient(45deg, rgba(0, 183, 255, 0.8), rgba(0, 183, 255, 0.4));
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .send-btn:hover {
+            background: linear-gradient(45deg, rgba(255, 140, 0, 0.8), rgba(255, 140, 0, 0.4));
+            box-shadow: 0 0 15px rgba(255, 140, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .send-btn:active {
+            transform: translateY(0);
+        }
+        
+        .online-users {
+            background: var(--panel-bg);
+            padding: 20px;
+            border-left: 1px solid rgba(0, 183, 255, 0.3);
+            overflow-y: auto;
+        }
+        
+        .users-title {
+            color: var(--neon-blue);
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            background: rgba(0, 183, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .user-item:hover {
+            background: rgba(0, 183, 255, 0.2);
+            border-color: var(--neon-blue);
+            transform: translateX(5px);
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: bold;
+        }
+        
+        .user-rank {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .user-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--neon-green);
+        }
+        
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-red);
+            border-radius: 8px;
+            padding: 15px 20px;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(255, 0, 60, 0.5);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        .alert-success {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        .own-message {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: rgba(0, 255, 65, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='anasayfa.html'">← Ana Sayfa</button>
+        <h1>💬 Sohbet Odası</h1>
+        <div id="userInfo"></div>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-main">
+            <div class="chat-messages" id="messagesContainer">
+                <div class="empty-state">Henüz mesaj yok. İlk mesajı siz yazın!</div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="message-input" id="messageInput" placeholder="Mesajınızı yazın...">
+                <button class="send-btn" id="sendBtn">Gönder</button>
+            </div>
+        </div>
+        
+        <div class="online-users">
+            <div class="users-title">🔴 Çevrimiçi Kullanıcılar</div>
+            <div id="onlineUsers">
+                <div class="empty-state">Çevrimiçi kullanıcı yok</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, get, set, remove, child } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAoHT3BDfKcimv-43vkyYXoSVpOJ5vIsM",
+            authDomain: "projecweb-e3382.firebaseapp.com",
+            databaseURL: "https://projecweb-e3382-default-rtdb.firebaseio.com",
+            projectId: "projecweb-e3382",
+            storageBucket: "projecweb-e3382.appspot.com",
+            messagingSenderId: "867646029095",
+            appId: "1:867646029095:web:4d708255cc7b34f758bd02"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+        let currentUser = null;
+        let currentUserData = null;
+
+        // Alert fonksiyonu
+        function showAlert(message, type = 'error') {
+            // Önceki uyarıları temizle
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) {
+                document.body.removeChild(existingAlert);
+            }
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${type === 'success' ? 'alert-success' : ''}`;
+            alertDiv.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 5px;">
+                    ${type === 'success' ? '✔ BAŞARILI' : '⚠ HATA'}
+                </div>
+                <div>${message}</div>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (document.body.contains(alertDiv)) {
+                    alertDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        if (document.body.contains(alertDiv)) {
+                            document.body.removeChild(alertDiv);
+                        }
+                    }, 500);
+                }
+            }, 4000);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const userRef = ref(database, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                
+                if (snapshot.exists()) {
+                    currentUserData = snapshot.val();
+                    document.getElementById('userInfo').textContent = 
+                        `${currentUserData.username || 'Kullanıcı'} - ${currentUserData.rank || 'Misafir'}`;
+                    
+                    // Yetki kontrolü
+                    if (currentUserData.rank === 'Misafir') {
+                        showAlert('Sohbet odasına erişim izniniz yok!', 'error');
+                        setTimeout(() => {
+                            window.location.href = 'anasayfa.html';
+                        }, 2000);
+                        return;
+                    }
+
+                    // Kullanıcıyı online olarak işaretle
+                    await set(ref(database, 'users/' + user.uid + '/status'), 'online');
+                    
+                    loadMessages();
+                    loadOnlineUsers();
+                } else {
+                    showAlert('Kullanıcı verileri bulunamadı!', 'error');
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        function loadMessages() {
+            const messagesRef = ref(database, 'messages');
+            onValue(messagesRef, (snapshot) => {
+                const messages = snapshot.val();
+                const container = document.getElementById('messagesContainer');
+                
+                if (!messages) {
+                    container.innerHTML = '<div class="empty-state">Henüz mesaj yok. İlk mesajı siz yazın!</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                // Mesajları timestamp'e göre sırala
+                const messageEntries = Object.entries(messages);
+                const sortedMessages = messageEntries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+                
+                sortedMessages.forEach(([messageKey, msg]) => {
+                    const isOwnMessage = msg.userId === currentUser?.uid;
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${isOwnMessage ? 'own-message' : ''}`;
+                    messageDiv.innerHTML = `
+                        <div class="message-header">
+                            <div style="display: flex; align-items: center;">
+                                <span class="message-sender">${msg.sender || 'Bilinmeyen'}</span>
+                                <span class="message-rank">${msg.rank || 'Misafir'}</span>
+                            </div>
+                            <span class="message-time">${formatTime(msg.timestamp)}</span>
+                        </div>
+                        <div class="message-content">${msg.text || ''}</div>
+                        ${(currentUserData && ['Müdür', 'Amir'].includes(currentUserData.rank)) ? 
+                            `<div class="message-actions">
+                                <button class="delete-btn" onclick="deleteMessage('${messageKey}')">Sil</button>
+                            </div>` : ''}
+                    `;
+                    container.appendChild(messageDiv);
+                });
+                
+                // En son mesaja scroll et
+                container.scrollTop = container.scrollHeight;
+            }, (error) => {
+                console.error('Mesajlar yüklenirken hata:', error);
+                showAlert('Mesajlar yüklenirken bir hata oluştu', 'error');
+            });
+        }
+
+        function formatTime(timestamp) {
+            if (!timestamp) return 'Bilinmeyen';
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('tr-TR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function loadOnlineUsers() {
+            const usersRef = ref(database, 'users');
+            onValue(usersRef, (snapshot) => {
+                const users = snapshot.val();
+                const container = document.getElementById('onlineUsers');
+                
+                if (!users) {
+                    container.innerHTML = '<div class="empty-state">Çevrimiçi kullanıcı yok</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                let hasOnlineUsers = false;
+                
+                for (const userId in users) {
+                    const user = users[userId];
+                    if (user.status === 'online' && user.rank !== 'Misafir') {
+                        hasOnlineUsers = true;
+                        const userDiv = document.createElement('div');
+                        userDiv.className = 'user-item';
+                        userDiv.innerHTML = `
+                            <div class="user-avatar">${user.username ? user.username.charAt(0).toUpperCase() : 'U'}</div>
+                            <div class="user-info">
+                                <div class="user-name">${user.username || 'Kullanıcı'}</div>
+                                <div class="user-rank">${user.rank || 'Misafir'}</div>
+                            </div>
+                            <div class="user-status"></div>
+                        `;
+                        userDiv.onclick = () => startDM(userId, user.username);
+                        container.appendChild(userDiv);
+                    }
+                }
+                
+                if (!hasOnlineUsers) {
+                    container.innerHTML = '<div class="empty-state">Çevrimiçi kullanıcı yok</div>';
+                }
+            }, (error) => {
+                console.error('Kullanıcılar yüklenirken hata:', error);
+                showAlert('Kullanıcılar yüklenirken bir hata oluştu', 'error');
+            });
+        }
+
+        // Mesaj gönderme
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            
+            if (!text) {
+                showAlert('Lütfen mesaj yazın!', 'error');
+                return;
+            }
+            
+            if (!currentUserData) {
+                showAlert('Kullanıcı bilgileriniz yüklenemedi!', 'error');
+                return;
+            }
+
+            try {
+                const messagesRef = ref(database, 'messages');
+                await push(messagesRef, {
+                    text: text,
+                    sender: currentUserData.username || 'Kullanıcı',
+                    rank: currentUserData.rank || 'Misafir',
+                    timestamp: Date.now(),
+                    userId: currentUser.uid
+                });
+                
+                input.value = '';
+                input.focus();
+                
+            } catch (error) {
+                console.error('Mesaj gönderilirken hata:', error);
+                showAlert('Mesaj gönderilirken bir hata oluştu: ' + error.message, 'error');
+            }
+        }
+
+        // Mesaj silme - DÜZELTİLMİŞ VERSİYON
+        window.deleteMessage = async function(messageKey) {
+            if (!currentUserData || !['Müdür', 'Amir'].includes(currentUserData.rank)) {
+                showAlert('Bu işlem için yetkiniz yok!', 'error');
+                return;
+            }
+
+            if (confirm('Bu mesajı silmek istediğinizden emin misiniz?')) {
+                try {
+                    const messageRef = ref(database, `messages/${messageKey}`);
+                    await remove(messageRef);
+                    showAlert('Mesaj başarıyla silindi!', 'success');
+                } catch (error) {
+                    console.error('Mesaj silinirken hata:', error);
+                    showAlert('Mesaj silinirken bir hata oluştu: ' + error.message, 'error');
+                }
+            }
+        };
+
+        // DM başlatma
+        function startDM(userId, username) {
+            showAlert(`DM başlatılıyor: ${username}`, 'success');
+            // DM işlevselliği buraya eklenecek
+        }
+
+        // Sayfadan çıkarken offline olarak işaretle
+        window.addEventListener('beforeunload', async () => {
+            if (currentUser) {
+                try {
+                    await set(ref(database, 'users/' + currentUser.uid + '/status'), 'offline');
+                } catch (error) {
+                    console.error('Status güncelleme hatası:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
